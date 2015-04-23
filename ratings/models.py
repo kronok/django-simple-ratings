@@ -1,7 +1,8 @@
 import hashlib
 import django
 
-from django.contrib.auth.models import User
+from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericForeignKey
 from django.db import models
@@ -14,7 +15,7 @@ from generic_aggregation import generic_annotate
 
 class RatedItemBase(models.Model):
     score = models.FloatField(default=0, db_index=True)
-    user = models.ForeignKey(User, related_name='%(class)ss')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)ss')
     hashed = models.CharField(max_length=40, editable=False, db_index=True)
 
     class Meta:
