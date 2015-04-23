@@ -1,7 +1,7 @@
 from math import sqrt
 
 import django
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.generic import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import connection
@@ -42,7 +42,7 @@ def query_as_sql(query):
 def sim_euclidean_distance(ratings_queryset, factor_a, factor_b):
     rating_model = ratings_queryset.model
 
-    if isinstance(factor_a, User):
+    if isinstance(factor_a, get_user_model()):
         filter_field = 'user_id'
         match_on = 'hashed'
         lookup_a = factor_a.pk
@@ -99,7 +99,7 @@ def sim_euclidean_distance(ratings_queryset, factor_a, factor_b):
 def sim_pearson_correlation(ratings_queryset, factor_a, factor_b):
     rating_model = ratings_queryset.model
 
-    if isinstance(factor_a, User):
+    if isinstance(factor_a, get_user_model()):
         filter_field = 'user_id'
         match_on = 'hashed'
         lookup_a = factor_a.pk
