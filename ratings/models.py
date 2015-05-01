@@ -2,13 +2,13 @@ import hashlib
 import django
 
 from django.conf import settings
-from django.contrib.auth import get_user_model
+
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericForeignKey
 from django.db import models
 from django.db.models.query import QuerySet
 
-from ratings.utils import get_content_object_field, is_gfk, recommended_items
+from .utils import get_content_object_field, is_gfk, recommended_items
 
 from generic_aggregation import generic_annotate
 
@@ -198,10 +198,13 @@ class _RatingsDescriptor(models.Manager):
                 self.all().delete()
             clear.alters_data = True
 
-            def rate(self, user, score):
+            def rate(self, user, score, comment=None):
                 rating, created = self.get_or_create(user=user)
-                if created or score != rating.score:
+                #TODO: check if comment is different here
+                if created or score != rating.score or comment != rating.comment:
                     rating.score = score
+                    #if comment:
+                    rating.comment = comment
                     rating.save()
                 return rating
 
@@ -249,7 +252,7 @@ class _RatingsDescriptor(models.Manager):
         return is_gfk(self.get_content_object_field())
 
     def update_similar_items(self):
-        from ratings.utils import calculate_similar_items
+        from .utils import calculate_similar_items
         calculate_similar_items(self.all())
 
     def similar_items(self, item):
