@@ -137,7 +137,7 @@ class _RatingsDescriptor(models.Manager):
         manager = self.__get__(instance)
         manager.add(*value)
 
-    def get_query_set(self):
+    def get_queryset(self):
         base_filters = self.rating_model.base_kwargs(self.rated_model)
         qs = RatingsQuerySet(self.rating_model, rated_model=self.rated_model)
         return qs.filter(**base_filters)
@@ -159,7 +159,7 @@ class _RatingsDescriptor(models.Manager):
         rated_model = self.rated_model
 
         class RelatedManager(superclass):
-            def get_query_set(self):
+            def get_queryset(self):
                 qs = RatingsQuerySet(rel_model, rated_model=rated_model)
                 return qs.filter(**(self.core_filters))
 
