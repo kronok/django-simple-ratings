@@ -33,7 +33,7 @@ class RatedItemBase(models.Model):
         content_field = get_content_object_field(self)
         related_object = getattr(self, content_field.name)
         uniq = '%s.%s' % (related_object._meta, related_object.pk)
-        return hashlib.sha1(uniq).hexdigest()
+        return hashlib.sha1(str(uniq).encode('utf-8')).hexdigest()
 
     @classmethod
     def lookup_kwargs(cls, instance):
