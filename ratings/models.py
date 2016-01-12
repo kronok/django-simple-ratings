@@ -203,9 +203,8 @@ class _RatingsDescriptor(models.Manager):
                 #TODO: check if comment is different here
                 if created or score != rating.score or comment != rating.comment:
                     rating.score = score
-                    #if comment:
                     rating.comment = comment
-                    rating.save()
+
                 return rating
 
             def unrate(self, user):
