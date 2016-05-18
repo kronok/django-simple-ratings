@@ -4,11 +4,19 @@ import django
 from django.conf import settings
 
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.generic import GenericForeignKey
+#from django.contrib.contenttypes.generic import GenericForeignKey
 from django.db import models
 from django.db.models.query import QuerySet
 
-from .utils import get_content_object_field, is_gfk, recommended_items
+try:
+    #Django 1.9
+    from django.contrib.contenttypes.generic import GenericForeignKey
+except ImportError:
+    from django.contrib.contenttypes.fields import GenericForeignKey
+
+from .utils import get_content_object_field, \
+    is_gfk, \
+    recommended_items
 
 from generic_aggregation import generic_annotate
 
