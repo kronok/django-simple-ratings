@@ -2,12 +2,20 @@ import hashlib
 import django
 
 from django.conf import settings
-from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+
 from django.db import models
 from django.db.models.query import QuerySet
 
-from .utils import get_content_object_field, is_gfk, recommended_items
+try:
+    #Django 1.9
+    from django.contrib.contenttypes.fields import GenericForeignKey
+except ImportError:
+    from django.contrib.contenttypes.generic import GenericForeignKey
+
+from .utils import get_content_object_field, \
+    is_gfk, \
+    recommended_items
 
 from generic_aggregation import generic_annotate
 
@@ -33,7 +41,7 @@ class RatedItemBase(models.Model):
         content_field = get_content_object_field(self)
         related_object = getattr(self, content_field.name)
         uniq = '%s.%s' % (related_object._meta, related_object.pk)
-        return hashlib.sha1(uniq).hexdigest()
+        return hashlib.sha1(str(uniq).encode('utf-8')).hexdigest()
 
     @classmethod
     def lookup_kwargs(cls, instance):
