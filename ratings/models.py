@@ -2,9 +2,8 @@ import hashlib
 import django
 
 from django.conf import settings
-
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.generic import GenericForeignKey
 from django.db import models
 from django.db.models.query import QuerySet
 
@@ -20,6 +19,7 @@ class RatedItemBase(models.Model):
 
     class Meta:
         abstract = True
+        app_label = 'ratings'
 
     def __unicode__(self):
         return u"%s rated %s by %s" % (self.content_object, self.score,
@@ -48,6 +48,7 @@ class RatedItem(RatedItemBase):
     object_id = models.IntegerField()
     content_type = models.ForeignKey(ContentType, related_name="rated_items")
     content_object = GenericForeignKey()
+
 
     @classmethod
     def lookup_kwargs(cls, instance):
@@ -292,3 +293,6 @@ class SimilarItem(models.Model):
 
     def __unicode__(self):
         return u'%s (%s)' % (self.similar_object, self.score)
+
+    class Meta:
+        app_label = 'ratings'
