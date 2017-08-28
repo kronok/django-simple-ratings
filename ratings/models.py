@@ -249,9 +249,12 @@ class _RatingsDescriptor(models.Manager):
                 # bayesian scoring
                 pretend_votes = [2, 2, 2, 2, 2]
                 utilities = [-30, 2, 3, 4, 70]
-                item_votes = self.all().values_list('score', flat=True)
-                if not item_votes:
-                    return 0
+                item_votes = []
+                item_votes.append(self.filter(score=1).count())
+                item_votes.append(self.filter(score=2).count())
+                item_votes.append(self.filter(score=3).count())
+                item_votes.append(self.filter(score=4).count())
+                item_votes.append(self.filter(score=5).count())
                 votes = [iv + pv for (iv, pv) in zip(item_votes, pretend_votes)]
                 return sum(v * u for (v, u) in zip(votes, utilities)) / float(sum(votes))
 
