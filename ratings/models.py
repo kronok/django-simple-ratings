@@ -244,6 +244,14 @@ class _RatingsDescriptor(models.Manager):
             def similar_items(self):
                 return SimilarItem.objects.get_for_item(instance)
 
+            def bayesian_score(self):
+                # bayesian scoring
+                pretend_votes = [2, 2, 2, 2, 2]
+                utilities = [-30, 2, 3, 4, 70]
+                item_votes = self.all().values_list('score', flat=True)
+                votes = [iv + pv for (iv, pv) in zip(item_votes, pretend_votes)]
+                return sum(v * u for (v, u) in zip(votes, utilities)) / float(sum(votes))
+
         manager = RelatedManager()
         manager.core_filters = rel_model.lookup_kwargs(instance)
         manager.model = rel_model
