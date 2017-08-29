@@ -7,6 +7,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models.query import QuerySet
 
+from ratings import RATINGS_BAYESIAN_PRETEND_VOTES, RATINGS_BAYESIAN_UTILITIES
+
 try:
     #Django 1.9
     from django.contrib.contenttypes.fields import GenericForeignKey
@@ -247,8 +249,8 @@ class _RatingsDescriptor(models.Manager):
 
             def bayesian_score(self):
                 # bayesian scoring
-                pretend_votes = [2, 2, 2, 2, 2]
-                utilities = [-30, 2, 3, 4, 70]
+                pretend_votes = RATINGS_BAYESIAN_PRETEND_VOTES
+                utilities = RATINGS_BAYESIAN_UTILITIES
                 item_votes = []
                 item_votes.append(self.filter(score=1).count())
                 item_votes.append(self.filter(score=2).count())
