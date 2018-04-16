@@ -6,14 +6,9 @@ from django.contrib.contenttypes.models import ContentType
 
 from django.db import models
 from django.db.models.query import QuerySet
+from django.contrib.contenttypes.fields import GenericForeignKey
 
 from ratings import RATINGS_BAYESIAN_PRETEND_VOTES, RATINGS_BAYESIAN_UTILITIES
-
-try:
-    #Django 1.9
-    from django.contrib.contenttypes.fields import GenericForeignKey
-except ImportError:
-    from django.contrib.contenttypes.generic import GenericForeignKey
 
 from .utils import get_content_object_field, \
     is_gfk, \
@@ -24,7 +19,7 @@ from generic_aggregation import generic_annotate
 
 class RatedItemBase(models.Model):
     score = models.FloatField(default=0, db_index=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)ss')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)ss', on_delete=models.CASCADE)
     hashed = models.CharField(max_length=40, editable=False, db_index=True)
 
     class Meta:
@@ -32,8 +27,7 @@ class RatedItemBase(models.Model):
         app_label = 'ratings'
 
     def __unicode__(self):
-        return u"%s rated %s by %s" % (self.content_object, self.score,
-                                       self.user)
+        return u"%s rated %s by %s" % (self.content_object, self.score, self.user)
 
     def save(self, *args, **kwargs):
         self.hashed = self.generate_hash()
@@ -56,7 +50,7 @@ class RatedItemBase(models.Model):
 
 class RatedItem(RatedItemBase):
     object_id = models.IntegerField()
-    content_type = models.ForeignKey(ContentType, related_name="rated_items")
+    content_type = models.ForeignKey(ContentType, related_name="rated_items", on_delete=models.CASCADE)
     content_object = GenericForeignKey()
 
 
@@ -300,12 +294,12 @@ class SimilarItemManager(models.Manager):
 
 
 class SimilarItem(models.Model):
-    content_type = models.ForeignKey(ContentType, related_name='similar_items')
+    content_type = models.ForeignKey(ContentType, related_name='similar_items', on_delete=models.CASCADE)
     object_id = models.IntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
 
     similar_content_type = models.ForeignKey(ContentType,
-                                             related_name='similar_items_set')
+                                             related_name='similar_items_set', on_delete=models.CASCADE)
     similar_object_id = models.IntegerField()
     similar_object = GenericForeignKey('similar_content_type',
                                        'similar_object_id')
